@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func configuredStoreHandler(w http.ResponseWriter, r *http.Request, store *persist.Store) {
+func configuredStoreHandler(w http.ResponseWriter, r *http.Request, store persist.Store) {
 	params := r.URL.Query()
 	for k, v := range params {
 		fmt.Printf("%v=%v\n", k, v)
@@ -26,7 +26,7 @@ func configuredStoreHandler(w http.ResponseWriter, r *http.Request, store *persi
 	fmt.Fprintf(w, "%v", key.URN())
 }
 
-func configuredRetrieveHandler(w http.ResponseWriter, r *http.Request, store *persist.Store) {
+func configuredRetrieveHandler(w http.ResponseWriter, r *http.Request, store persist.Store) {
 	splitUrl := strings.Split(r.URL.Path, "/")
 	if len(splitUrl) < 3 {
 		return

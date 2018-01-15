@@ -7,7 +7,7 @@ import (
 	"github.com/davegarred/repeater/persist"
 )
 
-var store *persist.Store
+var store persist.Store
 
 func storeHandler(w http.ResponseWriter, r *http.Request) {
 	configuredStoreHandler(w, r, store)
