@@ -10,18 +10,11 @@ import (
 
 var store persist.Store
 
-func storeHandler(w http.ResponseWriter, r *http.Request) {
-	configuredStoreHandler(w, r, store)
-}
-func retrieveHandler(w http.ResponseWriter, r *http.Request) {
-	configuredRetrieveHandler(w, r, store)
-}
-
 type pathResolver struct {
-	handlers map[string]http.HandlerFunc
+	handlers map[string]handler
 }
 
-func (p *pathResolver) Add(path string, handler http.HandlerFunc) {
+func (p *pathResolver) Add(path string, handler handler) {
 	p.handlers[path] = handler
 }
 
@@ -29,20 +22,20 @@ func (p *pathResolver) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	signature := r.Method + " " + r.URL.Path
 	for pattern, handler := range p.handlers {
 		if ok, err := path.Match(pattern, signature); ok && err == nil {
-			handler(w, r)
+			handler(w, r, store)
 			return
 		} else if err != nil {
 			panic(err)
 		}
-		fmt.Printf("missed pattern: %v\n", pattern)
+		//		fmt.Printf("missed pattern: %v\n", pattern)
 	}
-	fmt.Printf("missed grab:    %v\n", signature)
+	//	fmt.Printf("missed grab:    %v\n", signature)
 	http.NotFound(w, r)
 }
 
 func main() {
 	store = persist.NewStore()
-	pathResolver := &pathResolver{handlers: make(map[string]http.HandlerFunc)}
+	pathResolver := &pathResolver{handlers: make(map[string]handler)}
 	pathResolver.Add("GET /store", storeHandler)
 	pathResolver.Add("GET /retrieve/*", retrieveHandler)
 	err := http.ListenAndServe(":8000", pathResolver)
