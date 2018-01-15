@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
 	"strings"
 
 	"github.com/davegarred/repeater/persist"
@@ -17,8 +16,7 @@ func storeHandler(w http.ResponseWriter, r *http.Request, store persist.Store) {
 	params := r.URL.Query()
 	serialized, err := json.Marshal(params)
 	if err != nil {
-		t := reflect.TypeOf(params).Name()
-		fmt.Printf("Could not serialize type %v: %v\n", t, err)
+		fmt.Printf("Could not serialize type %T: %v\n", err, err)
 		return
 	}
 	key := store.Store(string(serialized))
