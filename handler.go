@@ -22,7 +22,8 @@ func storeHandler(w http.ResponseWriter, r *http.Request, store persist.Store) {
 		return
 	}
 	key := store.Store(string(serialized))
-	fmt.Fprintf(w, "%v", key.URN())
+	w.Header().Set("X-Document-Id", key.String())
+	fmt.Fprintf(w, "%v", key.String())
 }
 
 func retrieveHandler(w http.ResponseWriter, r *http.Request, store persist.Store) {
@@ -44,5 +45,6 @@ func retrieveHandler(w http.ResponseWriter, r *http.Request, store persist.Store
 		return
 	}
 
+	w.Header().Set("content-type", "application/json")
 	fmt.Fprintf(w, "%v", val)
 }
