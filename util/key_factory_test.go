@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func TestInterface(t *testing.T) {
+func TestKeyFactoryInterface(t *testing.T) {
 	var f KeyFactory = NewKeyFactory()
 	key := f.Get()
 	if _, err := uuid.Parse(key); err != nil {

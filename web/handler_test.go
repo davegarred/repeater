@@ -15,7 +15,7 @@ const QUERY = "name=simple%20json%20object"
 func TestStoreHandler(t *testing.T) {
 	w := responseWriter()
 	r := request("/store?" + QUERY)
-	store := persist.NewStore()
+	store := persist.NewMemStore()
 	storeHandler(w, r, store)
 
 	uuidLength := 36
@@ -28,7 +28,7 @@ func TestStoreHandler(t *testing.T) {
 func TestStoreHandler_userDefinedName(t *testing.T) {
 	w := responseWriter()
 	r := request("/store/someName?" + QUERY)
-	store := persist.NewStore()
+	store := persist.NewMemStore()
 	storeHandler(w, r, store)
 
 	someName := "someName"
@@ -41,7 +41,7 @@ func TestStoreHandler_userDefinedName(t *testing.T) {
 func TestStoreHandler_nameUsedTwice(t *testing.T) {
 	w := responseWriter()
 	r := request("/store/someName?" + QUERY)
-	store := persist.NewStore()
+	store := persist.NewMemStore()
 	storeHandler(w, r, store)
 
 	w = responseWriter()
@@ -54,7 +54,7 @@ func TestStoreHandler_nameUsedTwice(t *testing.T) {
 func TestRetrieveHandler(t *testing.T) {
 	w := responseWriter()
 	r := request("/retrieve/" + KEY)
-	store := persist.NewStore()
+	store := persist.NewMemStore()
 	store.Store(KEY, VAL)
 	retrieveHandler(w, r, store)
 	assertEquals(t, VAL, w.writtenOut)
@@ -64,7 +64,7 @@ func TestRetrieveHandler(t *testing.T) {
 func TestRetrieveHandler_notFound(t *testing.T) {
 	w := responseWriter()
 	r := request("/retrieve/not_found")
-	store := persist.NewStore()
+	store := persist.NewMemStore()
 	retrieveHandler(w, r, store)
 	expected := "404 page not found\n"
 	assertEquals(t, expected, w.writtenOut)

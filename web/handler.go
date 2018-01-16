@@ -14,13 +14,16 @@ type handler func(http.ResponseWriter, *http.Request, persist.Store)
 
 func storeHandler(w http.ResponseWriter, r *http.Request, store persist.Store) {
 	splitUrl := strings.Split(r.URL.Path, "/")
+	urlSegments := len(splitUrl)
+
 	var key string
-	if len(splitUrl) < 2 {
+	switch {
+	case urlSegments < 2:
 		return
-	} else if len(splitUrl) > 2 {
-		key = splitUrl[2]
-	} else {
+	case urlSegments == 2:
 		key = uuid.New().String()
+	case urlSegments > 2:
+		key = splitUrl[2]
 	}
 
 	params := r.URL.Query()

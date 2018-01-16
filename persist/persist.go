@@ -22,7 +22,7 @@ type MemStore struct {
 	mu    sync.Mutex
 }
 
-func NewStore() *MemStore {
+func NewMemStore() *MemStore {
 	return &MemStore{items: make(map[string]string)}
 }
 

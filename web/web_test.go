@@ -7,6 +7,6 @@ import (
 )
 
 func Test(t *testing.T) {
-	persist.NewStore()
+	persist.NewMemStore()
 
 }

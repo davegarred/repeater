@@ -6,6 +6,7 @@ import (
 	"path"
 
 	"github.com/davegarred/repeater/persist"
+	"github.com/davegarred/repeater/util"
 )
 
 var store persist.Store
@@ -30,6 +31,8 @@ func (p *pathResolver) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		//		fmt.Printf("missed pattern: %v\n", pattern)
 	}
 	//	fmt.Printf("missed grab:    %v\n", signature)
+
+	util.Log("Request path could not be matched: %v", signature)
 	http.NotFound(w, r)
 }
 

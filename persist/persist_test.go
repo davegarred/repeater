@@ -9,11 +9,11 @@ const A_VALUE = "a test string to store"
 const A_VALUE_2 = "a second test string to store"
 
 func TestInterface(t *testing.T) {
-	var _ Store = NewStore()
+	var _ Store = NewMemStore()
 }
 
 func TestMemStore(t *testing.T) {
-	s := NewStore()
+	s := NewMemStore()
 	s.Store(A_KEY, A_VALUE)
 	result, err := s.Retrieve(A_KEY)
 	if result != A_VALUE || err != nil {
@@ -22,7 +22,7 @@ func TestMemStore(t *testing.T) {
 }
 
 func TestConflict(t *testing.T) {
-	s := NewStore()
+	s := NewMemStore()
 	if err := s.Store(A_KEY, A_VALUE); err != nil {
 		t.Errorf("error saving value")
 	}
