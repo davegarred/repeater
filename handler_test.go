@@ -22,7 +22,6 @@ func (w *ResponseWriterStub) WriteHeader(int) {
 
 func TestStoreHandler(t *testing.T) {
 	w := &ResponseWriterStub{}
-	//&http.ResponseWriter{}
 	r := &http.Request{
 		URL: &url.URL{},
 	}
@@ -30,5 +29,4 @@ func TestStoreHandler(t *testing.T) {
 	store := persist.NewStore()
 	retrieveHandler(w, r, store)
 	storeHandler(w, r, store)
-
 }
