@@ -7,7 +7,11 @@ import (
 
 const A_VALUE = "a test string to store"
 
-func TestStore(t *testing.T) {
+func TestInterface(t *testing.T) {
+	var _ Store = NewStore()
+}
+
+func TestMemStore(t *testing.T) {
 	s := NewStore()
 	key := s.Store(A_VALUE)
 	result := s.Retrieve(key)
