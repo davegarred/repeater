@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/davegarred/repeater/persist"
-	"github.com/google/uuid"
 )
 
 type handler func(http.ResponseWriter, *http.Request, persist.Store)
@@ -20,8 +19,8 @@ func storeHandler(w http.ResponseWriter, r *http.Request, store persist.Store) {
 		return
 	}
 	key := store.Store(string(serialized))
-	w.Header().Set("X-Document-Id", key.String())
-	fmt.Fprintf(w, "%v", key.String())
+	w.Header().Set("X-Document-Id", key)
+	fmt.Fprintf(w, "%v", key)
 }
 
 func retrieveHandler(w http.ResponseWriter, r *http.Request, store persist.Store) {
@@ -30,14 +29,7 @@ func retrieveHandler(w http.ResponseWriter, r *http.Request, store persist.Store
 		return
 	}
 
-	id := splitUrl[2]
-	key, err := uuid.Parse(id)
-	if err != nil {
-		fmt.Printf("Error parsing UUID - %v, %v \n", id, err)
-		return
-	}
-
-	val := store.Retrieve(key)
+	val := store.Retrieve(splitUrl[2])
 	if val == "" {
 		http.NotFound(w, r)
 		return
