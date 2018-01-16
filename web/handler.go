@@ -1,4 +1,4 @@
-package main
+package web
 
 import (
 	"encoding/json"
@@ -7,18 +7,39 @@ import (
 	"strings"
 
 	"github.com/davegarred/repeater/persist"
+	"github.com/google/uuid"
 )
 
 type handler func(http.ResponseWriter, *http.Request, persist.Store)
 
 func storeHandler(w http.ResponseWriter, r *http.Request, store persist.Store) {
+	splitUrl := strings.Split(r.URL.Path, "/")
+	var key string
+	if len(splitUrl) < 2 {
+		return
+	} else if len(splitUrl) > 2 {
+		key = splitUrl[2]
+	} else {
+		key = uuid.New().String()
+	}
+
 	params := r.URL.Query()
 	serialized, err := json.Marshal(params)
 	if err != nil {
 		fmt.Printf("Could not serialize type %T: %v\n", err, err)
 		return
 	}
-	key := store.Store(string(serialized))
+
+	if err := store.Store(key, string(serialized)); err != nil {
+		if err == persist.KEY_CONFLICT {
+			w.WriteHeader(400)
+			fmt.Fprintf(w, "%v", "Document already exists with this name")
+			return
+		} else {
+			panic("no error handling implemented on store yet")
+		}
+
+	}
 	w.Header().Set("X-Document-Id", key)
 	fmt.Fprintf(w, "%v", key)
 }
@@ -29,8 +50,8 @@ func retrieveHandler(w http.ResponseWriter, r *http.Request, store persist.Store
 		return
 	}
 
-	val := store.Retrieve(splitUrl[2])
-	if val == "" {
+	val, err := store.Retrieve(splitUrl[2])
+	if val == "" || err != nil {
 		http.NotFound(w, r)
 		return
 	}
