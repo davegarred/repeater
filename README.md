@@ -1,4 +1,4 @@
 RESTful document store for teh lulz
 
-Postman test stuff: 
-https://www.getpostman.com/collections/bf17c4ddfc9df5fc107e
+Postman testing: 
+https://www.getpostman.com/collections/37a3fda796891af05d40

@@ -1,5 +1,5 @@
 clean:
-		rm repeater
+		rm -f repeater
 
 test:
 		go test -v github.com/davegarred/repeater...

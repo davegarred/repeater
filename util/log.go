@@ -9,7 +9,7 @@ import (
 var logger *log.Logger
 
 func Log(format string, v ...interface{}) {
-	logger.Printf(format, v)
+	logger.Printf(format, v...)
 }
 
 func SetLogFile(l *os.File) {

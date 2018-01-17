@@ -44,6 +44,7 @@ func Start(s persist.Store) {
 	pathResolver.Add("GET /store", storeHandler)
 	pathResolver.Add("GET /store/*", storeHandler)
 	pathResolver.Add("GET /retrieve/*", retrieveHandler)
+	pathResolver.Add("GET /delete/*", deleteHandler)
 	err := http.ListenAndServe(":8000", pathResolver)
 	if err != nil {
 		fmt.Printf("%v\n", err)

@@ -11,4 +11,5 @@ func (e Error) Error() string {
 type Store interface {
 	Store(string, string) error
 	Retrieve(string) (string, error)
+	Delete(string) error
 }

@@ -25,3 +25,8 @@ func (s *MemStore) Store(k string, v string) error {
 func (s *MemStore) Retrieve(key string) (string, error) {
 	return s.items[key], nil
 }
+
+func (s *MemStore) Delete(k string) error {
+	delete(s.items, k)
+	return nil
+}

@@ -56,6 +56,7 @@ func TestRetrieveHandler(t *testing.T) {
 	r := request("/retrieve/" + KEY)
 	store := persist.NewMemStore()
 	store.Store(KEY, VAL)
+
 	retrieveHandler(w, r, store)
 	assertEquals(t, VAL, w.writtenOut)
 	assertEquals(t, "application/json", w.header["Content-Type"][0])
@@ -65,10 +66,23 @@ func TestRetrieveHandler_notFound(t *testing.T) {
 	w := responseWriter()
 	r := request("/retrieve/not_found")
 	store := persist.NewMemStore()
+
 	retrieveHandler(w, r, store)
+
 	expected := "404 page not found\n"
 	assertEquals(t, expected, w.writtenOut)
 	assertEquals(t, 404, w.headerInt)
+}
+
+func TestDeleteHandler(t *testing.T) {
+	w := responseWriter()
+	r := request("/delete/" + KEY)
+	store := persist.NewMemStore()
+
+	deleteHandler(w, r, store)
+
+	assertEquals(t, "", w.writtenOut)
+	assertEquals(t, 0, len(w.header))
 }
 
 func assertEquals(t *testing.T, expected interface{}, actual interface{}) {

@@ -20,8 +20,8 @@ func NewLocalStore(l string) *LocalStore {
 		panic(err)
 	}
 	util.Log("directory %v (%T)\n\tlisting:\n", l, dirList)
-	for something, fileInfo := range dirList {
-		util.Log("- %v %v %v\n", something, fileInfo.Mode(), fileInfo.Name())
+	for _, fileInfo := range dirList {
+		util.Log("- %v %v\n", fileInfo.Mode(), fileInfo.Name())
 	}
 	return &LocalStore{location: l}
 }
@@ -44,6 +44,7 @@ func (s *LocalStore) Store(k string, v string) error {
 	fmt.Fprint(file, v)
 	return nil
 }
+
 func (s *LocalStore) Retrieve(key string) (string, error) {
 	filename := s.buildFilename(key)
 	if _, e := os.Stat(filename); e != nil {
@@ -62,6 +63,12 @@ func (s *LocalStore) Retrieve(key string) (string, error) {
 	}
 
 	return string(val), nil
+}
+
+func (s *LocalStore) Delete(k string) error {
+	filename := s.buildFilename(k)
+	os.Remove(filename)
+	return nil
 }
 
 func (s *LocalStore) buildFilename(k string) string {
