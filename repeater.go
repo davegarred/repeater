@@ -11,6 +11,7 @@ import (
 
 func main() {
 	logfileName := flag.String("log", "", "Location of the log file to use")
+	diskStorage := flag.Bool("disk", false, "Store objects on disk (default is in-memory)")
 	flag.Parse()
 	if *logfileName != "" {
 		if logfile, e := os.Create(*logfileName); e == nil {
@@ -19,6 +20,11 @@ func main() {
 			defer logfile.Close()
 		}
 	}
-	store := persist.NewMemStore()
+	var store persist.Store
+	if *diskStorage {
+		store = persist.NewLocalStore("/home/ubuntu/repeater")
+	} else {
+		store = persist.NewMemStore()
+	}
 	web.Start(store)
 }

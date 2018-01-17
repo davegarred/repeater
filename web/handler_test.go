@@ -9,7 +9,7 @@ import (
 )
 
 const KEY = "a_key"
-const VAL = "{\"name\":[\"simple json object\"]}"
+const VAL = "{\"name\":\"simple json object\"}"
 const QUERY = "name=simple%20json%20object"
 
 func TestStoreHandler(t *testing.T) {
@@ -47,7 +47,7 @@ func TestStoreHandler_nameUsedTwice(t *testing.T) {
 	w = responseWriter()
 	storeHandler(w, r, store)
 
-	assertEquals(t, "Document already exists with this name", w.writtenOut)
+	assertEquals(t, "Document already exists with this key", w.writtenOut)
 	assertEquals(t, 400, w.headerInt)
 }
 

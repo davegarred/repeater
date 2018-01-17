@@ -11,6 +11,8 @@ import (
 
 var store persist.Store
 
+type handler func(http.ResponseWriter, *http.Request, persist.Store)
+
 type pathResolver struct {
 	handlers map[string]handler
 }
