@@ -1,10 +1,14 @@
 clean:
 		rm -f repeater
+		go clean
 
 test:
 		go test -v github.com/davegarred/repeater...
 
-build: test
+install: test
+		go install
+
+build:
 		go build -gcflags "-N -l"
 
 run: build
