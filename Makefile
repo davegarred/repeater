@@ -1,3 +1,6 @@
+deps:
+		go get -u github.com/google/uuid
+
 clean:
 		rm -f repeater
 
