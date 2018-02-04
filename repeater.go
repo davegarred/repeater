@@ -20,9 +20,10 @@ func main() {
 			defer logfile.Close()
 		}
 	}
-	var store persist.Store
+	var store web.Storer
 	if *diskStorage {
-		store = persist.NewLocalStore("/home/ubuntu/repeater")
+		home := os.Getenv("HOME")
+		store = persist.NewLocalStore(home + "/repeater")
 	} else {
 		store = persist.NewMemStore()
 	}

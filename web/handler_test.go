@@ -8,13 +8,13 @@ import (
 	"github.com/davegarred/repeater/persist"
 )
 
-const KEY = "a_key"
-const VAL = "{\"name\":\"simple json object\"}"
-const QUERY = "name=simple%20json%20object"
+const aTestKey = "a_key"
+const aTestValue = "{\"name\":\"simple json object\"}"
+const aTestQuery = "name=simple%20json%20object"
 
 func TestStoreHandler(t *testing.T) {
 	w := responseWriter()
-	r := request("/store?" + QUERY)
+	r := request("/store?" + aTestQuery)
 	store := persist.NewMemStore()
 	storeHandler(w, r, store)
 
@@ -22,12 +22,12 @@ func TestStoreHandler(t *testing.T) {
 	assertEquals(t, uuidLength, len(w.writtenOut))
 	assertEquals(t, uuidLength, len(w.header["X-Document-Id"][0]))
 	storedVal, _ := store.Retrieve(w.writtenOut)
-	assertEquals(t, VAL, storedVal)
+	assertEquals(t, aTestValue, storedVal)
 }
 
 func TestStoreHandler_userDefinedName(t *testing.T) {
 	w := responseWriter()
-	r := request("/store/someName?" + QUERY)
+	r := request("/store/someName?" + aTestQuery)
 	store := persist.NewMemStore()
 	storeHandler(w, r, store)
 
@@ -35,12 +35,12 @@ func TestStoreHandler_userDefinedName(t *testing.T) {
 	assertEquals(t, someName, w.writtenOut)
 	assertEquals(t, someName, w.header["X-Document-Id"][0])
 	storedVal, _ := store.Retrieve(w.writtenOut)
-	assertEquals(t, VAL, storedVal)
+	assertEquals(t, aTestValue, storedVal)
 }
 
 func TestStoreHandler_nameUsedTwice(t *testing.T) {
 	w := responseWriter()
-	r := request("/store/someName?" + QUERY)
+	r := request("/store/someName?" + aTestQuery)
 	store := persist.NewMemStore()
 	storeHandler(w, r, store)
 
@@ -53,12 +53,12 @@ func TestStoreHandler_nameUsedTwice(t *testing.T) {
 
 func TestRetrieveHandler(t *testing.T) {
 	w := responseWriter()
-	r := request("/retrieve/" + KEY)
+	r := request("/retrieve/" + aTestKey)
 	store := persist.NewMemStore()
-	store.Store(KEY, VAL)
+	store.Store("application/json", aTestKey, aTestValue)
 
 	retrieveHandler(w, r, store)
-	assertEquals(t, VAL, w.writtenOut)
+	assertEquals(t, aTestValue, w.writtenOut)
 	assertEquals(t, "application/json", w.header["Content-Type"][0])
 }
 
@@ -76,7 +76,7 @@ func TestRetrieveHandler_notFound(t *testing.T) {
 
 func TestDeleteHandler(t *testing.T) {
 	w := responseWriter()
-	r := request("/delete/" + KEY)
+	r := request("/delete/" + aTestKey)
 	store := persist.NewMemStore()
 
 	deleteHandler(w, r, store)

@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-
-	"github.com/davegarred/repeater/persist"
 )
 
-func retrieveHandler(w http.ResponseWriter, r *http.Request, store persist.Store) {
+func retrieveHandler(w http.ResponseWriter, r *http.Request, store Storer) {
 	splitUrl := strings.Split(r.URL.Path, "/")
 	if len(splitUrl) != 3 {
 		return

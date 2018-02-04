@@ -5,13 +5,18 @@ import (
 	"net/http"
 	"path"
 
-	"github.com/davegarred/repeater/persist"
 	"github.com/davegarred/repeater/util"
 )
 
-var store persist.Store
+type Storer interface {
+	Store(string, string, string) error
+	Retrieve(string) (string, error)
+	Delete(string) error
+}
 
-type handler func(http.ResponseWriter, *http.Request, persist.Store)
+var store Storer
+
+type handler func(http.ResponseWriter, *http.Request, Storer)
 
 type pathResolver struct {
 	handlers map[string]handler
@@ -38,7 +43,7 @@ func (p *pathResolver) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.NotFound(w, r)
 }
 
-func Start(s persist.Store) {
+func Start(s Storer) {
 	store = s
 	pathResolver := &pathResolver{handlers: make(map[string]handler)}
 	pathResolver.Add("GET /store", storeHandler)

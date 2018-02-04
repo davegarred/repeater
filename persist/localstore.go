@@ -11,6 +11,7 @@ import (
 
 type LocalStore struct {
 	location string
+	itemFile string
 	mu       sync.Mutex
 }
 
@@ -23,16 +24,17 @@ func NewLocalStore(l string) *LocalStore {
 	for _, fileInfo := range dirList {
 		util.Log("- %v %v\n", fileInfo.Mode(), fileInfo.Name())
 	}
-	return &LocalStore{location: l}
+
+	storedItemFile := l + "/.db"
+	return &LocalStore{location: l, itemFile: storedItemFile}
 }
 
-func (s *LocalStore) Store(k string, v string) error {
+func (s *LocalStore) Store(mimetype string, k string, v string) error {
 	filename := s.buildFilename(k)
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	if _, e := os.Stat(filename); e == nil {
-		util.Log("Attempted store key conflict with key: %v", k)
+	if s.exists(k) {
 		return KEY_CONFLICT
 	}
 	file, err := os.Create(filename)
@@ -42,6 +44,7 @@ func (s *LocalStore) Store(k string, v string) error {
 	defer file.Close()
 
 	fmt.Fprint(file, v)
+	s.registerNewItem(k, mimetype)
 	return nil
 }
 

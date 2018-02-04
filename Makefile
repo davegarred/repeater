@@ -5,7 +5,7 @@ clean:
 		rm -f repeater
 
 test:
-		go test -v github.com/davegarred/repeater...
+		go test -cover -v github.com/davegarred/repeater...
 
 build: test
 		go build -gcflags "-N -l"

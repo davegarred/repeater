@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/davegarred/repeater/persist"
 	"github.com/google/uuid"
+	"github.com/davegarred/repeater/persist"
 )
 
 func parseAndSerialize(params map[string][]string) (string, error) {
@@ -25,7 +25,7 @@ func parseAndSerialize(params map[string][]string) (string, error) {
 	return string(serialized), nil
 }
 
-func storeHandler(w http.ResponseWriter, r *http.Request, store persist.Store) {
+func storeHandler(w http.ResponseWriter, r *http.Request, store Storer) {
 	splitUrl := strings.Split(r.URL.Path, "/")
 	urlSegments := len(splitUrl)
 
@@ -44,7 +44,7 @@ func storeHandler(w http.ResponseWriter, r *http.Request, store persist.Store) {
 		panic(err)
 	}
 
-	if err := store.Store(key, data); err != nil {
+	if err := store.Store("application/json", key, data); err != nil {
 		if err == persist.KEY_CONFLICT {
 			w.WriteHeader(400)
 			fmt.Fprintf(w, "%v", "Document already exists with this key")
