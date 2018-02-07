@@ -10,8 +10,5 @@ func deleteHandler(w http.ResponseWriter, r *http.Request, store Storer) {
 	if len(splitURL) != 3 {
 		return
 	}
-
-	if err := store.Delete(splitURL[2]); err != nil {
-		panic(err)
-	}
+	store.Delete(splitURL[2])
 }

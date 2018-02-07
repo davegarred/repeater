@@ -9,6 +9,7 @@ import (
 func retrieveHandler(w http.ResponseWriter, r *http.Request, store Storer) {
 	splitURL := strings.Split(r.URL.Path, "/")
 	if len(splitURL) != 3 {
+		w.WriteHeader(404)
 		return
 	}
 

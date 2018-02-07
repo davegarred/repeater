@@ -5,85 +5,18 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/davegarred/repeater/persist"
 )
 
 const aTestKey = "a_key"
 const aTestValue = "{\"name\":\"simple json object\"}"
 const aTestQuery = "name=simple%20json%20object"
 
-func TestStoreHandler(t *testing.T) {
-	w := responseWriter()
-	r := request("/store?" + aTestQuery)
-	store := persist.NewMemStore()
-	storeHandler(w, r, store)
 
-	uuidLength := 36
-	assertEquals(t, uuidLength, len(w.writtenOut))
-	assertEquals(t, uuidLength, len(w.header["X-Document-Id"][0]))
-	storedVal, _ := store.Retrieve(w.writtenOut)
-	assertEquals(t, aTestValue, storedVal)
+func TestPathResolver(t *testing.T) {
+	result := defaultPathResolver()
+	assertEquals(t, 4, len(result.handlers))
 }
 
-func TestStoreHandler_userDefinedName(t *testing.T) {
-	w := responseWriter()
-	r := request("/store/someName?" + aTestQuery)
-	store := persist.NewMemStore()
-	storeHandler(w, r, store)
-
-	someName := "someName"
-	assertEquals(t, someName, w.writtenOut)
-	assertEquals(t, someName, w.header["X-Document-Id"][0])
-	storedVal, _ := store.Retrieve(w.writtenOut)
-	assertEquals(t, aTestValue, storedVal)
-}
-
-func TestStoreHandler_nameUsedTwice(t *testing.T) {
-	w := responseWriter()
-	r := request("/store/someName?" + aTestQuery)
-	store := persist.NewMemStore()
-	storeHandler(w, r, store)
-
-	w = responseWriter()
-	storeHandler(w, r, store)
-
-	assertEquals(t, "Document already exists with this key", w.writtenOut)
-	assertEquals(t, 400, w.headerInt)
-}
-
-func TestRetrieveHandler(t *testing.T) {
-	w := responseWriter()
-	r := request("/retrieve/" + aTestKey)
-	store := persist.NewMemStore()
-	store.Store("application/json", aTestKey, aTestValue)
-
-	retrieveHandler(w, r, store)
-	assertEquals(t, aTestValue, w.writtenOut)
-	assertEquals(t, "application/json", w.header["Content-Type"][0])
-}
-
-func TestRetrieveHandler_notFound(t *testing.T) {
-	w := responseWriter()
-	r := request("/retrieve/not_found")
-	store := persist.NewMemStore()
-
-	retrieveHandler(w, r, store)
-
-	expected := "404 page not found\n"
-	assertEquals(t, expected, w.writtenOut)
-	assertEquals(t, 404, w.headerInt)
-}
-
-func TestDeleteHandler(t *testing.T) {
-	w := responseWriter()
-	r := request("/delete/" + aTestKey)
-	store := persist.NewMemStore()
-
-	deleteHandler(w, r, store)
-
-	assertEquals(t, "", w.writtenOut)
-	assertEquals(t, 0, len(w.header))
-}
 
 func assertEquals(t *testing.T, expected interface{}, actual interface{}) {
 	if actual != expected {

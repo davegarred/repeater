@@ -48,13 +48,18 @@ func (p *pathResolver) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // Start kicks off the application web listener using the injected persistence mechanism
 func Start(s Storer) {
 	store = s
+	pathResolver := defaultPathResolver()
+	err := http.ListenAndServe(":8000", pathResolver)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	}
+}
+
+func defaultPathResolver() *pathResolver {
 	pathResolver := &pathResolver{handlers: make(map[string]handler)}
 	pathResolver.add("GET /store", storeHandler)
 	pathResolver.add("GET /store/*", storeHandler)
 	pathResolver.add("GET /retrieve/*", retrieveHandler)
 	pathResolver.add("GET /delete/*", deleteHandler)
-	err := http.ListenAndServe(":8000", pathResolver)
-	if err != nil {
-		fmt.Printf("%v\n", err)
-	}
+	return pathResolver
 }
