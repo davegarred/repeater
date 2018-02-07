@@ -6,13 +6,14 @@ import (
 	"net/http"
 	"path"
 
+	"github.com/davegarred/repeater/persist"
 	"github.com/davegarred/repeater/log"
 )
 
 // Storer abstracts the persistence mechanism allowing either a MemStore or LocalStore to be used
 type Storer interface {
 	Store(string, string, string) error
-	Retrieve(string) (string, error)
+	Retrieve(string) (*persist.StoredObject, error)
 	Delete(string) error
 }
 

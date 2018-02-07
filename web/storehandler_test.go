@@ -16,7 +16,7 @@ func TestStoreHandler(t *testing.T) {
 	assertEquals(t, uuidLength, len(w.writtenOut))
 	assertEquals(t, uuidLength, len(w.header["X-Document-Id"][0]))
 	storedVal, _ := store.Retrieve(w.writtenOut)
-	assertEquals(t, aTestValue, storedVal)
+	assertEquals(t, aTestValue, storedVal.Object)
 }
 
 func TestStoreHandler_userDefinedName(t *testing.T) {
@@ -29,7 +29,7 @@ func TestStoreHandler_userDefinedName(t *testing.T) {
 	assertEquals(t, someName, w.writtenOut)
 	assertEquals(t, someName, w.header["X-Document-Id"][0])
 	storedVal, _ := store.Retrieve(w.writtenOut)
-	assertEquals(t, aTestValue, storedVal)
+	assertEquals(t, aTestValue, storedVal.Object)
 }
 
 func TestStoreHandler_nameUsedTwice(t *testing.T) {

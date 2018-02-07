@@ -52,11 +52,11 @@ func (s *LocalStore) Store(mimetype string, key string, value string) error {
 }
 
 // Retrieve takes a key and returns the stored value or an error
-func (s *LocalStore) Retrieve(key string) (string, error) {
+func (s *LocalStore) Retrieve(key string) (*StoredObject, error) {
 	filename := s.buildFilename(key)
 	if _, e := os.Stat(filename); e != nil {
 		log.Log("Unable to find object with key: %v", key)
-		return "", nil
+		return nil, nil
 	}
 	file, err := os.Open(filename)
 	if err != nil {
@@ -65,11 +65,11 @@ func (s *LocalStore) Retrieve(key string) (string, error) {
 	defer file.Close()
 
 	val, err := ioutil.ReadAll(file)
-	if err != nil {
-		panic(err)
+	if len(val) == 0 || err != nil {
+		return nil, nil
 	}
-
-	return string(val), nil
+	storedObject := &StoredObject{"application/json", string(val)}
+	return storedObject, nil
 }
 
 // Delete removes the key-value pair associated with the given key

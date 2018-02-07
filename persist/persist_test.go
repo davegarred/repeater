@@ -15,7 +15,7 @@ const (
 
 type storer interface {
 	Store(string, string, string) error
-	Retrieve(string) (string, error)
+	Retrieve(string) (*StoredObject, error)
 	Delete(string) error
 }
 
@@ -59,7 +59,10 @@ func storeAndRetrieve(t *testing.T, s storer) {
 		t.Errorf("error storing value: %v", e)
 	}
 	result, err := s.Retrieve(aTestKey)
-	if result != aTestValue || err != nil {
+	if result.Mimetype != applicationJSON || err != nil {
+		t.Errorf("incorrect mimetype found")
+	}
+	if result.Object != aTestValue || err != nil {
 		t.Errorf("incorrect value found")
 	}
 }
@@ -69,7 +72,10 @@ func storeAndRetrieveAgain(t *testing.T, s storer) {
 		t.Errorf("error storing value: %v", e)
 	}
 	result, err := s.Retrieve(aTestKey2)
-	if result != aTestValue2 || err != nil {
+	if result.Mimetype != applicationJSON || err != nil {
+		t.Errorf("incorrect mimetype found")
+	}
+	if result.Object != aTestValue2 || err != nil {
 		t.Errorf("incorrect value found")
 	}
 }

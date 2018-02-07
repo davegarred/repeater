@@ -6,6 +6,8 @@ import (
 	"github.com/davegarred/repeater/persist"
 )
 
+const expected404 = "404 page not found\n"
+
 
 func TestRetrieveHandler(t *testing.T) {
 	w := responseWriter()
@@ -25,7 +27,7 @@ func TestRetrieveHandler_incorrectSignature(t *testing.T) {
 	store.Store("application/json", aTestKey, aTestValue)
 
 	retrieveHandler(w, r, store)
-	assertEquals(t, "", w.writtenOut)
+	assertEquals(t, expected404, w.writtenOut)
 	assertEquals(t, 404, w.headerInt)
 }
 
@@ -36,8 +38,7 @@ func TestRetrieveHandler_notFound(t *testing.T) {
 
 	retrieveHandler(w, r, store)
 
-	expected := "404 page not found\n"
-	assertEquals(t, expected, w.writtenOut)
+	assertEquals(t, expected404, w.writtenOut)
 	assertEquals(t, 404, w.headerInt)
 }
 

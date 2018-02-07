@@ -30,8 +30,13 @@ func (s *MemStore) Store(mimetype string, k string, v string) error {
 
 
 // Retrieve takes a key and returns the stored value or an error
-func (s *MemStore) Retrieve(key string) (string, error) {
-	return s.items[key], nil
+func (s *MemStore) Retrieve(key string) (*StoredObject, error) {
+	object := s.items[key]
+	if len(object) == 0 {
+		return nil, nil
+	}
+	storedObject := &StoredObject{"application/json", object}
+	return storedObject, nil
 }
 
 

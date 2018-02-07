@@ -9,3 +9,8 @@ type persistError string
 func (e persistError) Error() string {
 	return string(e)
 }
+
+type StoredObject struct {
+	Mimetype string
+	Object string
+}
