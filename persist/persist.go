@@ -1,9 +1,11 @@
+// Package persist provides functions to store and retrieve key-value pairs
 package persist
 
-const KEY_CONFLICT = Error("Key conflict on store")
+// KeyConflict is used during an attempt to store a key already that is already in use
+const KeyConflict = persistError("Key conflict on store")
 
-type Error string
+type persistError string
 
-func (e Error) Error() string {
+func (e persistError) Error() string {
 	return string(e)
 }

@@ -1,4 +1,5 @@
-package util
+// Package log provides simple logging shortcuts
+package log
 
 import (
 	"log"
@@ -8,10 +9,12 @@ import (
 
 var logger *log.Logger
 
+// Log provides a shortcut to the configured logger that maps to a Printf
 func Log(format string, v ...interface{}) {
 	logger.Printf(format, v...)
 }
 
+// SetLogFile allows the user to specify the file where logs are stored
 func SetLogFile(l *os.File) {
 	logger = log.New(l, "repeater ", log.LstdFlags|log.Lshortfile)
 }

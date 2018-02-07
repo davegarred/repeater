@@ -1,3 +1,4 @@
+// Package web provides the web server components of the application
 package web
 
 import (
@@ -5,9 +6,10 @@ import (
 	"net/http"
 	"path"
 
-	"github.com/davegarred/repeater/util"
+	"github.com/davegarred/repeater/log"
 )
 
+// Storer abstracts the persistence mechanism allowing either a MemStore or LocalStore to be used
 type Storer interface {
 	Store(string, string, string) error
 	Retrieve(string) (string, error)
@@ -22,7 +24,7 @@ type pathResolver struct {
 	handlers map[string]handler
 }
 
-func (p *pathResolver) Add(path string, handler handler) {
+func (p *pathResolver) add(path string, handler handler) {
 	p.handlers[path] = handler
 }
 
@@ -39,17 +41,18 @@ func (p *pathResolver) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	//	fmt.Printf("missed grab:    %v\n", signature)
 
-	util.Log("Request path could not be matched: %v", signature)
+	log.Log("Request path could not be matched: %v", signature)
 	http.NotFound(w, r)
 }
 
+// Start kicks off the application web listener using the injected persistence mechanism
 func Start(s Storer) {
 	store = s
 	pathResolver := &pathResolver{handlers: make(map[string]handler)}
-	pathResolver.Add("GET /store", storeHandler)
-	pathResolver.Add("GET /store/*", storeHandler)
-	pathResolver.Add("GET /retrieve/*", retrieveHandler)
-	pathResolver.Add("GET /delete/*", deleteHandler)
+	pathResolver.add("GET /store", storeHandler)
+	pathResolver.add("GET /store/*", storeHandler)
+	pathResolver.add("GET /retrieve/*", retrieveHandler)
+	pathResolver.add("GET /delete/*", deleteHandler)
 	err := http.ListenAndServe(":8000", pathResolver)
 	if err != nil {
 		fmt.Printf("%v\n", err)

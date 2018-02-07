@@ -6,36 +6,39 @@ import (
 	"os"
 	"sync"
 
-	"github.com/davegarred/repeater/util"
+	"github.com/davegarred/repeater/log"
 )
 
+// LocalStore will use the local filesystem to store objects
 type LocalStore struct {
 	location string
 	itemFile string
 	mu       sync.Mutex
 }
 
+// NewLocalStore returns a new *LocalStore using the given location
 func NewLocalStore(l string) *LocalStore {
 	dirList, err := ioutil.ReadDir(l)
 	if err != nil {
 		panic(err)
 	}
-	util.Log("directory %v (%T)\n\tlisting:\n", l, dirList)
+	log.Log("directory %v (%T)\n\tlisting:\n", l, dirList)
 	for _, fileInfo := range dirList {
-		util.Log("- %v %v\n", fileInfo.Mode(), fileInfo.Name())
+		log.Log("- %v %v\n", fileInfo.Mode(), fileInfo.Name())
 	}
 
 	storedItemFile := l + "/.db"
 	return &LocalStore{location: l, itemFile: storedItemFile}
 }
 
-func (s *LocalStore) Store(mimetype string, k string, v string) error {
-	filename := s.buildFilename(k)
+// Store will persist the object value and mimetype indexed by the key
+func (s *LocalStore) Store(mimetype string, key string, value string) error {
+	filename := s.buildFilename(key)
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	if s.exists(k) {
-		return KEY_CONFLICT
+	if s.exists(key) {
+		return KeyConflict
 	}
 	file, err := os.Create(filename)
 	if err != nil {
@@ -43,15 +46,16 @@ func (s *LocalStore) Store(mimetype string, k string, v string) error {
 	}
 	defer file.Close()
 
-	fmt.Fprint(file, v)
-	s.registerNewItem(k, mimetype)
+	fmt.Fprint(file, value)
+	s.registerNewItem(key, mimetype)
 	return nil
 }
 
+// Retrieve takes a key and returns the stored value or an error
 func (s *LocalStore) Retrieve(key string) (string, error) {
 	filename := s.buildFilename(key)
 	if _, e := os.Stat(filename); e != nil {
-		util.Log("Unable to find object with key: %v", key)
+		log.Log("Unable to find object with key: %v", key)
 		return "", nil
 	}
 	file, err := os.Open(filename)
@@ -68,6 +72,7 @@ func (s *LocalStore) Retrieve(key string) (string, error) {
 	return string(val), nil
 }
 
+// Delete removes the key-value pair associated with the given key
 func (s *LocalStore) Delete(k string) error {
 	filename := s.buildFilename(k)
 	os.Remove(filename)

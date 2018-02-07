@@ -26,8 +26,8 @@ func parseAndSerialize(params map[string][]string) (string, error) {
 }
 
 func storeHandler(w http.ResponseWriter, r *http.Request, store Storer) {
-	splitUrl := strings.Split(r.URL.Path, "/")
-	urlSegments := len(splitUrl)
+	splitURL := strings.Split(r.URL.Path, "/")
+	urlSegments := len(splitURL)
 
 	var key string
 	switch {
@@ -36,7 +36,7 @@ func storeHandler(w http.ResponseWriter, r *http.Request, store Storer) {
 	case urlSegments == 2:
 		key = uuid.New().String()
 	case urlSegments > 2:
-		key = splitUrl[2]
+		key = splitURL[2]
 	}
 
 	data, err := parseAndSerialize(r.URL.Query())
@@ -45,14 +45,14 @@ func storeHandler(w http.ResponseWriter, r *http.Request, store Storer) {
 	}
 
 	if err := store.Store("application/json", key, data); err != nil {
-		if err == persist.KEY_CONFLICT {
+		if err == persist.KeyConflict {
 			w.WriteHeader(400)
-			fmt.Fprintf(w, "%v", "Document already exists with this key")
+			fmt.Fprintf(w, "Document already exists with this key")
 			return
-		} else {
-			panic("no error handling implemented on store yet")
 		}
-
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "Unknown storage error encountered: %v", err)
+		return
 	}
 	w.Header().Set("X-Document-Id", key)
 	fmt.Fprintf(w, "%v", key)

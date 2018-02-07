@@ -4,31 +4,39 @@ import (
 	"sync"
 )
 
+// MemStore will store objects in memory only
 type MemStore struct {
 	items map[string]string
 	mimetype map[string]string
 	mu    sync.Mutex
 }
 
+// NewMemStore returns a new *MemStore
 func NewMemStore() *MemStore {
 	return &MemStore{items: make(map[string]string), mimetype: make(map[string]string)}
 }
 
+// Store will persist the object value and mimetype indexed by the key
 func (s *MemStore) Store(mimetype string, k string, v string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if curVal := s.items[k]; curVal != "" {
-		return KEY_CONFLICT
+		return KeyConflict
 	}
 	s.items[k] = v
 	s.mimetype[k] = mimetype
 	return nil
 }
+
+
+// Retrieve takes a key and returns the stored value or an error
 func (s *MemStore) Retrieve(key string) (string, error) {
 	return s.items[key], nil
 }
 
-func (s *MemStore) Delete(k string) error {
-	delete(s.items, k)
+
+// Delete removes the key-value pair associated with the given key
+func (s *MemStore) Delete(key string) error {
+	delete(s.items, key)
 	return nil
 }

@@ -6,12 +6,12 @@ import (
 )
 
 func deleteHandler(w http.ResponseWriter, r *http.Request, store Storer) {
-	splitUrl := strings.Split(r.URL.Path, "/")
-	if len(splitUrl) != 3 {
+	splitURL := strings.Split(r.URL.Path, "/")
+	if len(splitURL) != 3 {
 		return
 	}
 
-	if err := store.Delete(splitUrl[2]); err != nil {
+	if err := store.Delete(splitURL[2]); err != nil {
 		panic(err)
 	}
 }

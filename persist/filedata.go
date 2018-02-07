@@ -40,16 +40,16 @@ func (s *LocalStore) exists(key string) bool {
 	for i := 0; i < 10000; i++ {
 		buff := make([]byte, 256)
 		file.ReadAt(buff, offset)
-		kLen := int(buff[0])
-		if kLen == 0 {
+		keyLength := int(buff[0])
+		if keyLength == 0 {
 			return false
 		}
-		foundKey := string(buff[1 : kLen+1])
+		foundKey := string(buff[1 : keyLength+1])
 		if foundKey == key {
 			return true
 		}
-		vLen := int64(buff[2+kLen])
-		offset += vLen + 2
+		valueLength := int64(buff[2+keyLength])
+		offset += valueLength + 2
 	}
 	panic("took over 10000 iterations")
 }

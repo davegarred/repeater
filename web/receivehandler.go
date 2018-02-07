@@ -7,12 +7,12 @@ import (
 )
 
 func retrieveHandler(w http.ResponseWriter, r *http.Request, store Storer) {
-	splitUrl := strings.Split(r.URL.Path, "/")
-	if len(splitUrl) != 3 {
+	splitURL := strings.Split(r.URL.Path, "/")
+	if len(splitURL) != 3 {
 		return
 	}
 
-	val, err := store.Retrieve(splitUrl[2])
+	val, err := store.Retrieve(splitURL[2])
 	if val == "" || err != nil {
 		http.NotFound(w, r)
 		return

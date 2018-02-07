@@ -116,11 +116,11 @@ func (w *ResponseWriterStub) WriteHeader(i int) {
 }
 
 func request(path string) *http.Request {
-	if rawUrl, err := url.Parse(path); err != nil {
+	if rawURL, err := url.Parse(path); err != nil {
 		panic(err)
 	} else {
 		return &http.Request{
-			URL: rawUrl,
+			URL: rawURL,
 		}
 	}
 }
