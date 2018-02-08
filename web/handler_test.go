@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"net/url"
 	"testing"
+	"strings"
 
+	"io/ioutil"
 )
 
 const aTestKey = "a_key"
@@ -14,7 +16,7 @@ const aTestQuery = "name=simple%20json%20object"
 
 func TestPathResolver(t *testing.T) {
 	result := defaultPathResolver()
-	assertEquals(t, 4, len(result.handlers))
+	assertEquals(t, 5, len(result.handlers))
 }
 
 
@@ -54,6 +56,32 @@ func request(path string) *http.Request {
 	} else {
 		return &http.Request{
 			URL: rawURL,
+		}
+	}
+}
+
+func requestWithBody(path string, body string) *http.Request {
+	if rawURL, err := url.Parse(path); err != nil {
+		panic(err)
+	} else {
+		return &http.Request{
+			URL: rawURL,
+			Body: ioutil.NopCloser(strings.NewReader(body)),
+		}
+	}
+}
+func requestWithContentTypeAndBody(path string, contentType string, body string) *http.Request {
+	headers := make(map[string][]string)
+	c := make([]string,1)
+	headers["Content-Type"] = c
+	c[0] = contentType
+	if rawURL, err := url.Parse(path); err != nil {
+		panic(err)
+	} else {
+		return &http.Request{
+			URL: rawURL,
+			Header: headers,
+			Body: ioutil.NopCloser(strings.NewReader(body)),
 		}
 	}
 }

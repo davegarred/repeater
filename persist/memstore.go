@@ -35,7 +35,8 @@ func (s *MemStore) Retrieve(key string) (*StoredObject, error) {
 	if len(object) == 0 {
 		return nil, nil
 	}
-	storedObject := &StoredObject{"application/json", object}
+	mimetype := s.mimetype[key]
+	storedObject := &StoredObject{mimetype, object}
 	return storedObject, nil
 }
 

@@ -58,8 +58,9 @@ func Start(s Storer) {
 
 func defaultPathResolver() *pathResolver {
 	pathResolver := &pathResolver{handlers: make(map[string]handler)}
-	pathResolver.add("GET /store", storeHandler)
-	pathResolver.add("GET /store/*", storeHandler)
+	pathResolver.add("POST /store", postStoreHandler)
+	pathResolver.add("GET /store", getStoreHandler)
+	pathResolver.add("GET /store/*", getStoreHandler)
 	pathResolver.add("GET /retrieve/*", retrieveHandler)
 	pathResolver.add("GET /delete/*", deleteHandler)
 	return pathResolver

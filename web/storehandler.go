@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"io/ioutil"
 
 	"github.com/google/uuid"
 	"github.com/davegarred/repeater/persist"
@@ -25,7 +26,7 @@ func parseAndSerialize(params map[string][]string) (string, error) {
 	return string(serialized), nil
 }
 
-func storeHandler(w http.ResponseWriter, r *http.Request, store Storer) {
+func getStoreHandler(w http.ResponseWriter, r *http.Request, store Storer) {
 	splitURL := strings.Split(r.URL.Path, "/")
 	urlSegments := len(splitURL)
 
@@ -45,6 +46,30 @@ func storeHandler(w http.ResponseWriter, r *http.Request, store Storer) {
 	}
 
 	if err := store.Store("application/json", key, data); err != nil {
+		if err == persist.KeyConflict {
+			w.WriteHeader(400)
+			fmt.Fprintf(w, "Document already exists with this key")
+			return
+		}
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "Unknown storage error encountered: %v", err)
+		return
+	}
+	w.Header().Set("X-Document-Id", key)
+	fmt.Fprintf(w, "%v", key)
+}
+
+func postStoreHandler(w http.ResponseWriter, r *http.Request, store Storer) {
+	key := uuid.New().String()
+	mimetype := r.Header.Get("Content-Type")
+	if mimetype == "" {
+		mimetype = "application/octet-stream"
+	}
+	data,err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return
+	}
+	if err := store.Store(mimetype, key, string(data)); err != nil {
 		if err == persist.KeyConflict {
 			w.WriteHeader(400)
 			fmt.Fprintf(w, "Document already exists with this key")
