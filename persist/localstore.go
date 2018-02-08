@@ -68,7 +68,8 @@ func (s *LocalStore) Retrieve(key string) (*StoredObject, error) {
 	if len(val) == 0 || err != nil {
 		return nil, nil
 	}
-	storedObject := &StoredObject{"application/json", string(val)}
+	mimetype := s.mimetype(key)
+	storedObject := &StoredObject{mimetype, string(val)}
 	return storedObject, nil
 }
 
