@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package grpcfile;
+
+service Filemover {
+  rpc Pushfile (Filecontent) returns (Filekey) {}
+}
+
+message Filecontent {
+  string content = 1;
+}
+
+message Filekey {
+  string key = 1;
+}
