@@ -4,10 +4,13 @@ import (
 	"flag"
 	"os"
 
-	"github.com/davegarred/repeater/persist"
+	"github.com/davegarred/repeater/grpc/server"
 	"github.com/davegarred/repeater/log"
+	"github.com/davegarred/repeater/persist"
 	"github.com/davegarred/repeater/web"
 )
+
+var defaultPort = ":8080"
 
 func main() {
 	logfileName := flag.String("log", "", "Location of the log file to use")
@@ -27,5 +30,7 @@ func main() {
 	} else {
 		store = persist.NewMemStore()
 	}
+	go server.StartGRPCServer(store, defaultPort)
+
 	web.Start(store)
 }

@@ -52,9 +52,9 @@ func (s *LocalStore) deserialize(key string) *fileData {
 	keyLength := int(buff[0])
 	valueOffset := 1 + keyLength
 	valueLength := int64(buff[valueOffset])
-	foundKey := string(buff[1 : keyLength+1])
+	foundKey := string(buff[1: keyLength+1])
 
-	foundMimetype := string(buff[valueOffset + 1 : int64(valueOffset + 1) + valueLength])
+	foundMimetype := string(buff[valueOffset+1: int64(valueOffset+1)+valueLength])
 
 	return &fileData{foundKey, foundMimetype}
 }
@@ -97,7 +97,7 @@ func (s *LocalStore) findKey(key string) int64 {
 		if keyLength == 0 {
 			return -1
 		}
-		foundKey := string(buff[1 : keyLength+1])
+		foundKey := string(buff[1: keyLength+1])
 		if foundKey == key {
 			return offset
 		}

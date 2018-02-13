@@ -1,13 +1,16 @@
 deps:
 		go get -u github.com/google/uuid
 
+proto:
+		protoc -I grpc/proto --go_out=plugins=grpc:grpc/proto grpc/proto/*.proto
+
 clean:
 		rm -f repeater
 
 test:
 		go test -cover -v github.com/davegarred/repeater...
 
-build: test
+build: test proto
 		go build -gcflags "-N -l"
 
 run: build
