@@ -30,7 +30,8 @@ func main() {
 	} else {
 		store = persist.NewMemStore()
 	}
-	go server.StartGRPCServer(store, defaultPort)
+	grpcserver := server.NewServer(store)
+	go grpcserver.Start(defaultPort)
 
 	web.Start(store)
 }

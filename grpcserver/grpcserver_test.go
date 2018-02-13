@@ -8,6 +8,7 @@ import (
 
 func TestServer_Pushfile(t *testing.T) {
 	store := persist.NewMemStore()
-	fmt.Printf("%+v\n", store)
-	//StartGRPCServer(store, defaultPort)
+	server := NewServer(store)
+	fmt.Printf("%+v\n", server)
+	//server.Start(defaultPort)
 }

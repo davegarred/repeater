@@ -67,6 +67,7 @@ func postStoreHandler(w http.ResponseWriter, r *http.Request, store Storer) {
 	if err != nil {
 		return
 	}
+	defer r.Body.Close()
 
 	mimetype := r.Header.Get("Content-Type")
 	if mimetype == "" {

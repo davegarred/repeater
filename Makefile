@@ -11,6 +11,7 @@ proto:
 clean:
 		go clean
 		rm -f repeater
+		rm -f grpcclient/grpcclient
 
 test:
 		go test -cover -v github.com/davegarred/repeater...
