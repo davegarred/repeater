@@ -1,4 +1,6 @@
-/repeater
+repeater
+grpcclient
 .idea
 .coverage
 *.iml
+
