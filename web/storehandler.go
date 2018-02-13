@@ -7,6 +7,7 @@ import (
 	"strings"
 	"io/ioutil"
 
+	"gopkg.in/h2non/filetype.v1"
 	"github.com/google/uuid"
 	"github.com/davegarred/repeater/persist"
 )
@@ -61,14 +62,22 @@ func getStoreHandler(w http.ResponseWriter, r *http.Request, store Storer) {
 
 func postStoreHandler(w http.ResponseWriter, r *http.Request, store Storer) {
 	key := uuid.New().String()
-	mimetype := r.Header.Get("Content-Type")
-	if mimetype == "" {
-		mimetype = "application/octet-stream"
-	}
+
 	data,err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return
 	}
+
+	mimetype := r.Header.Get("Content-Type")
+	if mimetype == "" {
+		kind,unknown := filetype.Match(data)
+		if unknown == nil && kind.MIME.Value != "" {
+			mimetype = kind.MIME.Value
+		} else {
+			mimetype = "application/octet-stream"
+		}
+	}
+
 	if err := store.Store(mimetype, key, string(data)); err != nil {
 		if err == persist.KeyConflict {
 			w.WriteHeader(400)
@@ -79,6 +88,7 @@ func postStoreHandler(w http.ResponseWriter, r *http.Request, store Storer) {
 		fmt.Fprintf(w, "Unknown storage error encountered: %v", err)
 		return
 	}
+
 	w.Header().Set("X-Document-Id", key)
 	fmt.Fprintf(w, "%v", key)
 }

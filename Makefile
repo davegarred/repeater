@@ -1,10 +1,15 @@
 deps:
 		go get -u github.com/google/uuid
+		go get -u gopkg.in/h2non/filetype.v1
+		go get -u google.golang.org/grpc
+		go get -u github.com/golang/protobuf/proto
+		go get -u github.com/golang/protobuf/protoc-gen-go
 
 proto:
 		protoc -I grpc/proto --go_out=plugins=grpc:grpc/proto grpc/proto/*.proto
 
 clean:
+		go clean
 		rm -f repeater
 
 test:

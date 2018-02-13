@@ -4,7 +4,7 @@ import (
 	"flag"
 	"os"
 
-	"github.com/davegarred/repeater/grpc/server"
+	"github.com/davegarred/repeater/grpcserver"
 	"github.com/davegarred/repeater/log"
 	"github.com/davegarred/repeater/persist"
 	"github.com/davegarred/repeater/web"
