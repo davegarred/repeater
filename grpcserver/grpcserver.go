@@ -1,6 +1,8 @@
 package server
 
 import (
+	"fmt"
+	"github.com/davegarred/repeater/persist"
 	"log"
 	"net"
 	"context"
@@ -18,7 +20,7 @@ const (
 
 type Storer interface {
 	Store(string, string, string) error
-	//Retrieve(string) (*persist.StoredObject, error)
+	Retrieve(string) (*persist.StoredObject, error)
 	//Delete(string) error
 }
 
@@ -30,17 +32,27 @@ func NewServer(s Storer) *GrpcServer {
 	return &GrpcServer{s}
 }
 
+func (s *GrpcServer) Getfile(ctx context.Context, in *pb.Filekey) (*pb.Filecontent, error) {
+	fmt.Printf("getting file with key %v\n", in.Key)
+
+	file, err := s.storer.Retrieve(in.Key)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.Filecontent{[]byte(file.Object)},nil
+}
+
 func (s *GrpcServer) Pushfile(ctx context.Context, in *pb.Filecontent) (*pb.Filekey, error) {
 	key := uuid.New().String()
 
 	data := in.Content
 	mimetype := "application/octet-stream"
-	kind,unknown := filetype.Match([]byte(data))
+	kind,unknown := filetype.Match(data)
 	if unknown == nil && kind.MIME.Value != ""  {
 		mimetype = kind.MIME.Value
 	}
 
-	if err := s.storer.Store(mimetype, key, in.Content); err != nil {
+	if err := s.storer.Store(mimetype, key, string(data)); err != nil {
 		return nil, err
 	}
 	return &pb.Filekey{Key: key}, nil

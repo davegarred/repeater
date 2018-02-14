@@ -4,10 +4,11 @@ package grpcfile;
 
 service Filemover {
   rpc Pushfile (Filecontent) returns (Filekey) {}
+  rpc Getfile (Filekey) returns (Filecontent) {}
 }
 
 message Filecontent {
-  string content = 1;
+  bytes content = 1;
 }
 
 message Filekey {

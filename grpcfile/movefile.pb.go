@@ -34,7 +34,7 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type Filecontent struct {
-	Content string `protobuf:"bytes,1,opt,name=content" json:"content,omitempty"`
+	Content []byte `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
 }
 
 func (m *Filecontent) Reset()                    { *m = Filecontent{} }
@@ -42,11 +42,11 @@ func (m *Filecontent) String() string            { return proto.CompactTextStrin
 func (*Filecontent) ProtoMessage()               {}
 func (*Filecontent) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-func (m *Filecontent) GetContent() string {
+func (m *Filecontent) GetContent() []byte {
 	if m != nil {
 		return m.Content
 	}
-	return ""
+	return nil
 }
 
 type Filekey struct {
@@ -82,6 +82,7 @@ const _ = grpc.SupportPackageIsVersion4
 
 type FilemoverClient interface {
 	Pushfile(ctx context.Context, in *Filecontent, opts ...grpc.CallOption) (*Filekey, error)
+	Getfile(ctx context.Context, in *Filekey, opts ...grpc.CallOption) (*Filecontent, error)
 }
 
 type filemoverClient struct {
@@ -101,10 +102,20 @@ func (c *filemoverClient) Pushfile(ctx context.Context, in *Filecontent, opts ..
 	return out, nil
 }
 
+func (c *filemoverClient) Getfile(ctx context.Context, in *Filekey, opts ...grpc.CallOption) (*Filecontent, error) {
+	out := new(Filecontent)
+	err := grpc.Invoke(ctx, "/grpcfile.Filemover/Getfile", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Filemover service
 
 type FilemoverServer interface {
 	Pushfile(context.Context, *Filecontent) (*Filekey, error)
+	Getfile(context.Context, *Filekey) (*Filecontent, error)
 }
 
 func RegisterFilemoverServer(s *grpc.Server, srv FilemoverServer) {
@@ -129,6 +140,24 @@ func _Filemover_Pushfile_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Filemover_Getfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Filekey)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FilemoverServer).Getfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpcfile.Filemover/Getfile",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FilemoverServer).Getfile(ctx, req.(*Filekey))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Filemover_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "grpcfile.Filemover",
 	HandlerType: (*FilemoverServer)(nil),
@@ -136,6 +165,10 @@ var _Filemover_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Pushfile",
 			Handler:    _Filemover_Pushfile_Handler,
+		},
+		{
+			MethodName: "Getfile",
+			Handler:    _Filemover_Getfile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -145,14 +178,15 @@ var _Filemover_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("movefile.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 139 bytes of a gzipped FileDescriptorProto
+	// 157 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xcb, 0xcd, 0x2f, 0x4b,
 	0x4d, 0xcb, 0xcc, 0x49, 0xd5, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x48, 0x2f, 0x2a, 0x48,
 	0x06, 0xf1, 0x95, 0xd4, 0xb9, 0xb8, 0xdd, 0x32, 0x73, 0x52, 0x93, 0xf3, 0xf3, 0x4a, 0x52, 0xf3,
-	0x4a, 0x84, 0x24, 0xb8, 0xd8, 0xa1, 0x4c, 0x09, 0x46, 0x05, 0x46, 0x0d, 0xce, 0x20, 0x18, 0x57,
+	0x4a, 0x84, 0x24, 0xb8, 0xd8, 0xa1, 0x4c, 0x09, 0x46, 0x05, 0x46, 0x0d, 0x9e, 0x20, 0x18, 0x57,
 	0x49, 0x9a, 0x8b, 0x1d, 0xa4, 0x30, 0x3b, 0xb5, 0x52, 0x48, 0x80, 0x8b, 0x39, 0x3b, 0xb5, 0x12,
-	0xaa, 0x00, 0xc4, 0x34, 0x72, 0xe6, 0xe2, 0x04, 0x49, 0x82, 0x6c, 0x29, 0x12, 0x32, 0xe3, 0xe2,
-	0x08, 0x28, 0x2d, 0xce, 0x00, 0x19, 0x2f, 0x24, 0xaa, 0x07, 0xb3, 0x49, 0x0f, 0xc9, 0x1a, 0x29,
-	0x41, 0x54, 0xe1, 0xec, 0xd4, 0x4a, 0x25, 0x86, 0x24, 0x36, 0xb0, 0xdb, 0x8c, 0x01, 0x01, 0x00,
-	0x00, 0xff, 0xff, 0x6c, 0x3f, 0x53, 0x54, 0xad, 0x00, 0x00, 0x00,
+	0xac, 0x80, 0x33, 0x08, 0xc4, 0x34, 0xaa, 0xe2, 0xe2, 0x04, 0x49, 0x82, 0x6c, 0x29, 0x12, 0x32,
+	0xe3, 0xe2, 0x08, 0x28, 0x2d, 0xce, 0x00, 0x19, 0x2f, 0x24, 0xaa, 0x07, 0xb3, 0x49, 0x0f, 0xc9,
+	0x1a, 0x29, 0x41, 0x54, 0xe1, 0xec, 0xd4, 0x4a, 0x25, 0x06, 0x21, 0x53, 0x2e, 0x76, 0xf7, 0xd4,
+	0x12, 0xb0, 0x36, 0x4c, 0x79, 0x29, 0xec, 0x26, 0x29, 0x31, 0x24, 0xb1, 0x81, 0xbd, 0x64, 0x0c,
+	0x08, 0x00, 0x00, 0xff, 0xff, 0x0d, 0x09, 0x91, 0xc5, 0xe4, 0x00, 0x00, 0x00,
 }
